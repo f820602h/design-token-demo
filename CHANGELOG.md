@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/f820602h/design-token-demo/compare/v1.1.0...v1.2.0) (2026-03-19)
+
+
+### Features
+
+* publish to GitHub Packages on release ([6f85ae9](https://github.com/f820602h/design-token-demo/commit/6f85ae926ac113e08e1216a6618ecf3ce35c6cd8))
+
 # [1.1.0](https://github.com/f820602h/design-token-demo/compare/v1.0.0...v1.1.0) (2026-03-19)
 
 
