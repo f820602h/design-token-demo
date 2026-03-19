@@ -12,6 +12,7 @@ jobs:
       contents: write        # 建立 GitHub Release、tag、commit package.json
       issues: write          # 在 issue 留 release 備註
       pull-requests: write   # 在 PR 留 release 備註
+      packages: write        # 發佈到 GitHub Packages
 
     steps:
       - name: Checkout
@@ -28,6 +29,7 @@ jobs:
         with:
           node-version: '22'
           cache: 'pnpm'
+          registry-url: 'https://npm.pkg.github.com'  # 指向 GitHub Packages
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -39,3 +41,4 @@ jobs:
         run: pnpm release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 用於發佈到 GitHub Packages
