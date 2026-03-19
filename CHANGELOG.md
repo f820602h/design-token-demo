@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/f820602h/design-token-demo/compare/v1.0.0...v1.1.0) (2026-03-19)
+
+
+### Features
+
+* attach build artifacts to GitHub Release and remove build from repo ([a9808c9](https://github.com/f820602h/design-token-demo/commit/a9808c9dd42b1e0ab09167153eb49b2ce95fa7b4))
+
 # 1.0.0 (2026-03-19)
 
 
