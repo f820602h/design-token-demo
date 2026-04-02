@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/f820602h/design-token-demo/compare/v1.2.0...v1.3.0) (2026-04-02)
+
+
+### Features
+
+* replace demo tokens with official brand token sets and support dark mode ([c2edec7](https://github.com/f820602h/design-token-demo/commit/c2edec7e7740e155b019f9d010d671d0826d957d))
+
 # [1.2.0](https://github.com/f820602h/design-token-demo/compare/v1.1.0...v1.2.0) (2026-03-19)
 
 
