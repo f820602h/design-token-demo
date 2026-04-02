@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/f820602h/design-token-demo/compare/v1.3.0...v1.3.1) (2026-04-02)
+
+
+### Bug Fixes
+
+* update release assets to match light/dark theme build output ([1cc0d29](https://github.com/f820602h/design-token-demo/commit/1cc0d29856c546b839ef8d297715479ac5a3afc8))
+
 # [1.3.0](https://github.com/f820602h/design-token-demo/compare/v1.2.0...v1.3.0) (2026-04-02)
 
 
