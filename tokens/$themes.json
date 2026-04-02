@@ -1,0 +1,20 @@
+[
+  {
+    "id": "light",
+    "name": "Light",
+    "selectedTokenSets": {
+      "Foundation/Light": "enabled",
+      "Foundation/Dark": "disabled",
+      "Semantic/Mode 1": "enabled"
+    }
+  },
+  {
+    "id": "dark",
+    "name": "Dark",
+    "selectedTokenSets": {
+      "Foundation/Light": "disabled",
+      "Foundation/Dark": "enabled",
+      "Semantic/Mode 1": "enabled"
+    }
+  }
+]
