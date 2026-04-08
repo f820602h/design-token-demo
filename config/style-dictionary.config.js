@@ -21,6 +21,59 @@ StyleDictionary.registerFilter({
     !(token.filePath.endsWith('Foundation/Light.json') && token.path[0].toLowerCase() === 'shadow'),
 })
 
+// typography composite 的屬性 → CSS 屬性對應
+const CSS_PROP_MAP = {
+  fontFamily: 'font-family',
+  fontSize: 'font-size',
+  fontWeight: 'font-weight',
+  lineHeight: 'line-height',
+  letterSpacing: 'letter-spacing',
+  textCase: 'text-transform',
+  textDecoration: 'text-decoration',
+}
+
+// 將 token reference（如 {fontFamilies.microsoft-jhenghei}）轉換為對應的 CSS 變數引用
+function refToVar(ref) {
+  const path = ref.replace(/^\{|\}$/g, '')
+  const kebab = path
+    .split('.')
+    .map(part => part.replace(/([A-Z])/g, '-$1').toLowerCase())
+    .join('-')
+  return `var(--c-${kebab})`
+}
+
+StyleDictionary.registerFormat({
+  name: 'css/typography-classes',
+  format: ({ dictionary }) => {
+    // 取出 Style.json 中的 typography composite tokens
+    // composite token 不會被展開，name 為 undefined，需從 key（如 {display.d1-pc-bold}）解析
+    const typographyTokens = dictionary.allTokens.filter(
+      token => token.filePath.endsWith('Style.json') && token.$type === 'typography',
+    )
+
+    const classes = typographyTokens.map(token => {
+      // name 經 name/kebab transform 後為 display-d1-pc-bold
+      const className = token.name
+      // 使用 original.$value 取得 transform 前的原始複合值（含 reference 字串）
+      const originalValue = token.original.$value
+
+      const props = Object.entries(originalValue)
+        .filter(([key]) => CSS_PROP_MAP[key])
+        .map(([key, val]) => {
+          const cssProp = CSS_PROP_MAP[key]
+          // reference 格式：{path.to.token}，非 reference 則直接使用原始值
+          const cssVal = typeof val === 'string' && val.startsWith('{') ? refToVar(val) : val
+          return `  ${cssProp}: ${cssVal};`
+        })
+        .join('\n')
+
+      return `.c-${className} {\n${props}\n}`
+    })
+
+    return classes.join('\n\n') + '\n'
+  },
+})
+
 const themes = JSON.parse(readFileSync('./tokens/$themes.json', 'utf-8'))
 const themeConfigs = permutateThemes(themes)
 
@@ -64,6 +117,20 @@ for (const [themeName, tokenSets] of Object.entries(themeConfigs)) {
           },
         ],
       },
+
+      // Typography CSS classes 只輸出一次（light）
+      ...(isLight && {
+        'css-typography': {
+          transformGroup: 'tokens-studio/kebab',
+          buildPath: 'build/css/',
+          files: [
+            {
+              destination: 'typography.css',
+              format: 'css/typography-classes',
+            },
+          ],
+        },
+      }),
 
       // JS / JSON 只輸出 light（作為預設值）
       ...(isLight && {
