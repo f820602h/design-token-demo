@@ -1,3 +1,16 @@
+# [2.0.0](https://github.com/f820602h/design-token-demo/compare/v1.3.1...v2.0.0) (2026-04-08)
+
+
+* feat!: restructure typography tokens and add CSS class generation ([d35917f](https://github.com/f820602h/design-token-demo/commit/d35917f3cab5bb9a0d8b025fe9f09a87c7d47266))
+
+
+### BREAKING CHANGES
+
+* "waring" renamed to "warning"; en-display and
+en-heading tokens removed from Foundation
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
 ## [1.3.1](https://github.com/f820602h/design-token-demo/compare/v1.3.0...v1.3.1) (2026-04-02)
 
 
