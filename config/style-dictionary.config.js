@@ -1,5 +1,5 @@
 import StyleDictionary from 'style-dictionary'
-import { register, permutateThemes } from '@tokens-studio/sd-transforms'
+import { register } from '@tokens-studio/sd-transforms'
 import { readFileSync } from 'fs'
 
 // 註冊 Token Studio 的 transforms 與 preprocessors
@@ -13,77 +13,40 @@ StyleDictionary.registerTransformGroup({
   ),
 })
 
-// Foundation/Light 和 Semantic/Mode 1 都定義了相同的 shadow tokens（大小寫不同的 key），
-// name transform 後會產生重複的識別字。統一保留 Semantic 的版本，排除 Foundation 的。
-StyleDictionary.registerFilter({
-  name: 'exclude-foundation-shadow',
-  filter: token =>
-    !(token.filePath.endsWith('Foundation/Light.json') && token.path[0].toLowerCase() === 'shadow'),
-})
-
-// typography composite 的屬性 → CSS 屬性對應
-const CSS_PROP_MAP = {
-  fontFamily: 'font-family',
-  fontSize: 'font-size',
-  fontWeight: 'font-weight',
-  lineHeight: 'line-height',
-  letterSpacing: 'letter-spacing',
-  textCase: 'text-transform',
-  textDecoration: 'text-decoration',
+// 遞迴深度合併 token set 物件
+/** @param {Record<string, any>} target @param {Record<string, any>} source */
+function deepMerge(target, source) {
+  const result = { ...target }
+  for (const [key, value] of Object.entries(source)) {
+    if (
+      value && typeof value === 'object' && !Array.isArray(value) &&
+      result[key] && typeof result[key] === 'object' && !Array.isArray(result[key])
+    ) {
+      result[key] = deepMerge(result[key], value)
+    } else {
+      result[key] = value
+    }
+  }
+  return result
 }
 
-// 將 token reference（如 {fontFamilies.microsoft-jhenghei}）轉換為對應的 CSS 變數引用
-function refToVar(ref) {
-  const path = ref.replace(/^\{|\}$/g, '')
-  const kebab = path
-    .split('.')
-    .map(part => part.replace(/([A-Z])/g, '-$1').toLowerCase())
-    .join('-')
-  return `var(--c-${kebab})`
+// 讀取單一 token.json，排除 $themes / $metadata 後拆出各 token set
+const { '$themes': _t, '$metadata': _m, ...tokenSets } = JSON.parse(
+  readFileSync('./token.json', 'utf-8')
+)
+
+// 各 theme 啟用的 token set（依解析優先序排列）
+const THEME_SETS = {
+  light: ['foundation_color/Light', 'foundation_size/Mode 1', 'semantic/Mode 1', 'component/Mode 1', 'text style', 'shadow'],
+  dark:  ['foundation_color/Dark',  'foundation_size/Mode 1', 'semantic/Mode 1', 'component/Mode 1', 'text style', 'shadow'],
 }
 
-StyleDictionary.registerFormat({
-  name: 'css/typography-classes',
-  format: ({ dictionary }) => {
-    // 取出 Style.json 中的 typography composite tokens
-    // composite token 不會被展開，name 為 undefined，需從 key（如 {display.d1-pc-bold}）解析
-    const typographyTokens = dictionary.allTokens.filter(
-      token => token.filePath.endsWith('Style.json') && token.$type === 'typography',
-    )
-
-    const classes = typographyTokens.map(token => {
-      // name 經 name/kebab transform 後為 display-d1-pc-bold
-      const className = token.name
-      // 使用 original.$value 取得 transform 前的原始複合值（含 reference 字串）
-      const originalValue = token.original.$value
-
-      const props = Object.entries(originalValue)
-        .filter(([key]) => CSS_PROP_MAP[key])
-        .map(([key, val]) => {
-          const cssProp = CSS_PROP_MAP[key]
-          // reference 格式：{path.to.token}，非 reference 則直接使用原始值
-          const cssVal = typeof val === 'string' && val.startsWith('{') ? refToVar(val) : val
-          return `  ${cssProp}: ${cssVal};`
-        })
-        .join('\n')
-
-      return `.c-${className} {\n${props}\n}`
-    })
-
-    return classes.join('\n\n') + '\n'
-  },
-})
-
-const themes = JSON.parse(readFileSync('./tokens/$themes.json', 'utf-8'))
-const themeConfigs = permutateThemes(themes)
-
-for (const [themeName, tokenSets] of Object.entries(themeConfigs)) {
-  const isLight = themeName.toLowerCase() === 'light'
-  const themeSlug = themeName.toLowerCase()
+for (const [themeSlug, sets] of Object.entries(THEME_SETS)) {
+  // 將各 token set 依序深度合併為單一 tokens 物件
+  const tokens = sets.reduce((merged, set) => deepMerge(merged, tokenSets[set] ?? {}), {})
 
   const sd = new StyleDictionary({
-    // 依 $themes.json 設定的 enabled token sets 依序載入
-    source: /** @type {string[]} */ (tokenSets).map(set => `tokens/${set}.json`),
+    tokens,
     preprocessors: ['tokens-studio'],
 
     platforms: {
@@ -118,48 +81,17 @@ for (const [themeName, tokenSets] of Object.entries(themeConfigs)) {
         ],
       },
 
-      // Typography CSS classes 只輸出一次（light）
-      ...(isLight && {
-        'css-typography': {
-          transformGroup: 'tokens-studio/kebab',
-          buildPath: 'build/css/',
-          files: [
-            {
-              destination: 'typography.css',
-              format: 'css/typography-classes',
-            },
-          ],
-        },
-      }),
-
-      // JS / JSON 只輸出 light（作為預設值）
-      ...(isLight && {
-        js: {
-          transformGroup: 'tokens-studio',
-          buildPath: 'build/js/',
-          files: [
-            {
-              destination: 'tokens.js',
-              format: 'javascript/es6',
-            },
-            {
-              destination: 'tokens.d.ts',
-              format: 'typescript/es6-declarations',
-            },
-          ],
-        },
-
-        json: {
-          transformGroup: 'tokens-studio',
-          buildPath: 'build/json/',
-          files: [
-            {
-              destination: 'tokens.json',
-              format: 'json/flat',
-            },
-          ],
-        },
-      }),
+      // JS，每個 theme 輸出獨立檔案
+      js: {
+        transformGroup: 'tokens-studio',
+        buildPath: 'build/js/',
+        files: [
+          {
+            destination: `${themeSlug}.js`,
+            format: 'javascript/es6',
+          },
+        ],
+      },
     },
   })
 

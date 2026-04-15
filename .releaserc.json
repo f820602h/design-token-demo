@@ -26,13 +26,12 @@
       "@semantic-release/github",
       {
         "assets": [
-          { "path": "build/css/light.css",         "label": "CSS Variables (Light)"   },
-          { "path": "build/css/dark.css",           "label": "CSS Variables (Dark)"    },
-          { "path": "build/scss/_light.scss",       "label": "SCSS Variables (Light)"  },
-          { "path": "build/scss/_dark.scss",        "label": "SCSS Variables (Dark)"   },
-          { "path": "build/js/tokens.js",           "label": "JavaScript Tokens"       },
-          { "path": "build/js/tokens.d.ts",         "label": "TypeScript Declarations" },
-          { "path": "build/json/tokens.json",       "label": "JSON Tokens"             }
+          { "path": "build/css/light.css",    "label": "CSS Variables (Light)"  },
+          { "path": "build/css/dark.css",     "label": "CSS Variables (Dark)"   },
+          { "path": "build/scss/_light.scss", "label": "SCSS Variables (Light)" },
+          { "path": "build/scss/_dark.scss",  "label": "SCSS Variables (Dark)"  },
+          { "path": "build/js/light.js",      "label": "JavaScript Tokens (Light)" },
+          { "path": "build/js/dark.js",       "label": "JavaScript Tokens (Dark)"  }
         ]
       }
     ]
