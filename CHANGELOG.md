@@ -1,3 +1,15 @@
+# [3.0.0](https://github.com/f820602h/design-token-demo/compare/v2.0.0...v3.0.0) (2026-04-15)
+
+
+* feat!: migrate to single token.json and simplify build pipeline ([5d43cb4](https://github.com/f820602h/design-token-demo/commit/5d43cb4c38d08329f2076156be313b9550275d6d))
+
+
+### BREAKING CHANGES
+
+* JS token file renamed from tokens.js to light.js / dark.js
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
 # [2.0.0](https://github.com/f820602h/design-token-demo/compare/v1.3.1...v2.0.0) (2026-04-08)
 
 
