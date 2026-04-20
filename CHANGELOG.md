@@ -1,3 +1,17 @@
+# [4.0.0](https://github.com/f820602h/design-token-demo/compare/v3.1.0...v4.0.0) (2026-04-20)
+
+
+* feat!: migrate to single global token set and unified build output ([8f7bb7b](https://github.com/f820602h/design-token-demo/commit/8f7bb7bb19ed16d451f640f7ee0d705a5e98b998))
+
+
+### BREAKING CHANGES
+
+* output files renamed from light/dark variants to
+unified files (tokens.css, _tokens.scss, tokens.js) to reflect new
+single global token set structure
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
 # [3.1.0](https://github.com/f820602h/design-token-demo/compare/v3.0.0...v3.1.0) (2026-04-20)
 
 
