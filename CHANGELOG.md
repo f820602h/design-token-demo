@@ -1,3 +1,10 @@
+# [3.1.0](https://github.com/f820602h/design-token-demo/compare/v3.0.0...v3.1.0) (2026-04-20)
+
+
+### Features
+
+* change color ([41677fb](https://github.com/f820602h/design-token-demo/commit/41677fb47bab1b205a66b3c03fc30f48868c262f))
+
 # [3.0.0](https://github.com/f820602h/design-token-demo/compare/v2.0.0...v3.0.0) (2026-04-15)
 
 
